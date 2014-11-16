@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">文件管理器</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="file_explorer">文件管理器</string>
+    <string name="sd_mounted">SD卡已经挂载</string>
+    <string name="sd_umounted">SD卡未挂载</string>
+
+</resources>
