@@ -42,6 +42,7 @@ public class AsyncLoadImage {
                 return;
             }
         }
+        imageView.setImageResource(R.drawable.format_picture);
         new LoadImageThread(path, imageView).start();
     }
 
@@ -53,6 +54,7 @@ public class AsyncLoadImage {
                 return;
             }
         }
+        imageView.setImageDrawable(context.getResources().getDrawable(R.drawable.icon));
         new LoadApkIconThread(context, path, imageView).start();
     }
 
@@ -77,7 +79,7 @@ public class AsyncLoadImage {
                     }
                 }
             }
-            Log.v(TAG, "thread id = " + this.getId() + " start loading");
+            Log.v(TAG, "thread id = " + this.getId() + " isAllowLoading = " + isAllowLoading);
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inSampleSize = 4;
             final Bitmap bitmap = BitmapFactory.decodeFile(path, options);
@@ -131,14 +133,14 @@ public class AsyncLoadImage {
             } else {
                 icon = context.getResources().getDrawable(R.drawable.icon);
             }
-            
+
             CacheApkIcon apkIcon = new CacheApkIcon(path, icon);
             if (cacheApkIcons.size() >= CACHE_IMAGE_SIZE) {
                 cacheApkIcons.poll();
             }
             cacheApkIcons.add(apkIcon);
             handler.post(new Runnable() {
-                
+
                 @Override
                 public void run() {
                     imageView.setImageDrawable(icon);
@@ -154,6 +156,12 @@ public class AsyncLoadImage {
 
     public void unlock() {
         this.isAllowLoading = true;
-        this.lock.notifyAll();
+        synchronized (lock) {
+            try {
+                this.lock.notifyAll();
+            } catch (Exception e) {
+                Log.v(TAG, "Exception happened, ex = " + e.getMessage());
+            }
+        }
     }
 }

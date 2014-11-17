@@ -1,10 +1,7 @@
-
 package org.solarex.fileexplorer.adapter;
 
 import android.content.Context;
-import android.nfc.Tag;
 import android.os.Handler;
-import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -42,6 +39,7 @@ public class FileListAdapter extends BaseAdapter implements OnScrollListener {
         this.allFileInfos = allFileInfos;
         this.lv = lv;
         this.asyncLoadImage = new AsyncLoadImage(handler);
+        this.lv.setOnScrollListener(this);
     }
 
     public void bindData(ArrayList<FileInfo> allFileInfos) {
