@@ -123,25 +123,27 @@ public class AsyncLoadImage {
             Log.v(TAG, "thread id = " + this.getId() + " loading apk icon");
             PackageManager pm = context.getPackageManager();
             PackageInfo packageInfo = pm.getPackageArchiveInfo(path, PackageManager.GET_ACTIVITIES);
+            final Drawable icon;
             if (null != packageInfo) {
                 ApplicationInfo info = packageInfo.applicationInfo;
                 info.publicSourceDir = path;
-                final Drawable icon = info.loadIcon(pm);
-                CacheApkIcon apkIcon = new CacheApkIcon(path, icon);
-                if (cacheApkIcons.size() >= CACHE_IMAGE_SIZE) {
-                    cacheApkIcons.poll();
-                }
-                cacheApkIcons.add(apkIcon);
-                handler.post(new Runnable() {
-                    
-                    @Override
-                    public void run() {
-                        imageView.setImageDrawable(icon);
-                    }
-                });
+                icon = info.loadIcon(pm);
             } else {
-                Drawable icon = context.getResources().getDrawable(R.drawable.icon);
+                icon = context.getResources().getDrawable(R.drawable.icon);
             }
+            
+            CacheApkIcon apkIcon = new CacheApkIcon(path, icon);
+            if (cacheApkIcons.size() >= CACHE_IMAGE_SIZE) {
+                cacheApkIcons.poll();
+            }
+            cacheApkIcons.add(apkIcon);
+            handler.post(new Runnable() {
+                
+                @Override
+                public void run() {
+                    imageView.setImageDrawable(icon);
+                }
+            });
         }
 
     }

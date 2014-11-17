@@ -2,7 +2,11 @@
 package org.solarex.fileexplorer.adapter;
 
 import android.content.Context;
+import android.nfc.Tag;
 import android.os.Handler;
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,12 +27,17 @@ import java.io.File;
 import java.util.ArrayList;
 
 public class FileListAdapter extends BaseAdapter implements OnScrollListener {
+    private static final String TAG = "FileListAdapter";
+    private Context context;
     private LayoutInflater inflater;
     private ArrayList<FileInfo> allFileInfos;
     private ListView lv;
     private AsyncLoadImage asyncLoadImage;
+    private static Parcelable listViewState;
 
-    public FileListAdapter(Context context, ArrayList<FileInfo> allFileInfos, ListView lv, Handler handler) {
+    public FileListAdapter(Context context, ArrayList<FileInfo> allFileInfos, ListView lv,
+            Handler handler) {
+        this.context = context;
         inflater = LayoutInflater.from(context);
         this.allFileInfos = allFileInfos;
         this.lv = lv;
@@ -84,17 +93,19 @@ public class FileListAdapter extends BaseAdapter implements OnScrollListener {
                 item.fileIcon.setImageResource(R.drawable.text);
             } else if (name.endsWith(".chm")) {
                 item.fileIcon.setImageResource(R.drawable.chm);
-            } else if (name.endsWith(".html" )||name.endsWith(".xml")||name.endsWith(".htm")) {
+            } else if (name.endsWith(".html") || name.endsWith(".xml") || name.endsWith(".htm")) {
                 item.fileIcon.setImageResource(R.drawable.html);
-            } else if (name.endsWith(".mp4")||name.endsWith(".3gp")||name.endsWith(".wmv")||name.endsWith(".rm")) {
+            } else if (name.endsWith(".mp4") || name.endsWith(".3gp") || name.endsWith(".wmv")
+                    || name.endsWith(".rm")) {
                 item.fileIcon.setImageResource(R.drawable.format_media);
-            } else if (name.endsWith(".mp3")||name.endsWith(".wma")||name.endsWith(".ape")) {
+            } else if (name.endsWith(".mp3") || name.endsWith(".wma") || name.endsWith(".ape")) {
                 item.fileIcon.setImageResource(R.drawable.format_music);
             } else if (name.endsWith(".xls")) {
                 item.fileIcon.setImageResource(R.drawable.excel);
             } else if (name.endsWith(".apk")) {
                 item.fileIcon.setTag(file.getAbsolutePath());
-            } else  {
+                asyncLoadImage.loadApkIcon(this.context, item.fileIcon);
+            } else {
                 item.fileIcon.setImageResource(R.drawable.file);
             }
         }
@@ -103,7 +114,20 @@ public class FileListAdapter extends BaseAdapter implements OnScrollListener {
 
     @Override
     public void onScrollStateChanged(AbsListView view, int scrollState) {
-
+        Log.v(TAG, "onScrollStateChanged scrollState = " + scrollState);
+        switch (scrollState) {
+            case OnScrollListener.SCROLL_STATE_FLING:
+            case OnScrollListener.SCROLL_STATE_TOUCH_SCROLL:
+                asyncLoadImage.lock();
+                Log.v(TAG, "threads locked,not loading images or apk icons now...");
+                break;
+            case OnScrollListener.SCROLL_STATE_IDLE:
+                listViewState = this.lv.onSaveInstanceState();
+                asyncLoadImage.unlock();
+                Log.v(TAG, "threads unlocked, loading images");
+            default:
+                break;
+        }
     }
 
     @Override
