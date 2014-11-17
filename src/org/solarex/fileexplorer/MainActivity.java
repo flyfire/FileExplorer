@@ -10,14 +10,17 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.solarex.fileexplorer.bean.FileInfo;
 import org.solarex.fileexplorer.utils.FileUtils;
 import org.solarex.fileexplorer.utils.SolarexFilter;
 
 import java.io.File;
+import java.util.ArrayList;
 
 public class MainActivity extends Activity {
     private ListView lv;
     private TextView pathInfo;
+    private ArrayList<FileInfo> allFileInfos;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,7 +30,9 @@ public class MainActivity extends Activity {
         
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             Toast.makeText(this, getString(R.string.sd_mounted), Toast.LENGTH_LONG).show();
-            File[] allFiles = getFiles();
+            //File[] allFiles = getFiles();
+            String sdPath = Environment.getExternalStorageDirectory().getAbsolutePath();
+            allFileInfos = getFiles(sdPath);
             //FileListAdapter adapter = new FileListAdapter(this, allFiles, lv);
             //lv.setAdapter(adapter);
         } else {
@@ -35,10 +40,9 @@ public class MainActivity extends Activity {
         }
     }
     
-    public File[] getFiles(){
-        String sdPath = Environment.getExternalStorageDirectory().getAbsolutePath();
-        File[] unSortedFiles = new File(sdPath).listFiles(new SolarexFilter());
-        return FileUtils.sort(unSortedFiles);
+    public ArrayList<FileInfo> getFiles(String path){
+        File[] unSortedFiles = new File(path).listFiles(new SolarexFilter());
+        return FileUtils.sortAndGenerate(unSortedFiles);
     }
 
     @Override

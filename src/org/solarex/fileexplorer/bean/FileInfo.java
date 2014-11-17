@@ -1,24 +1,22 @@
 package org.solarex.fileexplorer.bean;
 
+import java.io.File;
+
 public class FileInfo {
-    private String fileName;
+    private File file;
     private boolean isSelected;
     
-    public FileInfo(){
-        this.isSelected = false;
-    }
-    
-    public FileInfo(String name, boolean isSelected){
-        this.fileName = name;
+    public FileInfo(File file, boolean isSelected){
+        this.file = file;
         this.isSelected = isSelected;
     }
-
-    public String getFileName() {
-        return fileName;
+    
+    public File getFile() {
+        return file;
     }
 
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
+    public void setFile(File file) {
+        this.file = file;
     }
 
     public boolean isSelected() {
