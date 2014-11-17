@@ -6,6 +6,10 @@ public class CacheImg {
     String path;
     Bitmap icon;
     
+    public CacheImg(String path, Bitmap icon){
+        this.path = path;
+        this.icon = icon;
+    }
     public String getPath() {
         return path;
     }
