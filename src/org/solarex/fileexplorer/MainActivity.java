@@ -4,12 +4,15 @@ package org.solarex.fileexplorer;
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.solarex.fileexplorer.adapter.FileListAdapter;
 import org.solarex.fileexplorer.bean.FileInfo;
 import org.solarex.fileexplorer.utils.FileUtils;
 import org.solarex.fileexplorer.utils.SolarexFilter;
@@ -21,6 +24,7 @@ public class MainActivity extends Activity {
     private ListView lv;
     private TextView pathInfo;
     private ArrayList<FileInfo> allFileInfos;
+    private final String TAG = MainActivity.class.getSimpleName();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,7 +36,11 @@ public class MainActivity extends Activity {
             Toast.makeText(this, getString(R.string.sd_mounted), Toast.LENGTH_LONG).show();
             //File[] allFiles = getFiles();
             String sdPath = Environment.getExternalStorageDirectory().getAbsolutePath();
+            Log.v(TAG, "onCreate sdPath = " + sdPath);
+            Log.v(TAG, "files = " + new File(sdPath).listFiles());
             allFileInfos = getFiles(sdPath);
+            FileListAdapter adapter = new FileListAdapter(this, allFileInfos, lv, new Handler());
+            lv.setAdapter(adapter);
             //FileListAdapter adapter = new FileListAdapter(this, allFiles, lv);
             //lv.setAdapter(adapter);
         } else {

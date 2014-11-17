@@ -2,6 +2,7 @@
 package org.solarex.fileexplorer.adapter;
 
 import android.content.Context;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,7 @@ import android.widget.TextView;
 import org.solarex.fileexplorer.R;
 import org.solarex.fileexplorer.bean.FileInfo;
 import org.solarex.fileexplorer.bean.FileItem;
+import org.solarex.fileexplorer.utils.AsyncLoadImage;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -24,11 +26,13 @@ public class FileListAdapter extends BaseAdapter implements OnScrollListener {
     private LayoutInflater inflater;
     private ArrayList<FileInfo> allFileInfos;
     private ListView lv;
+    private AsyncLoadImage asyncLoadImage;
 
-    public FileListAdapter(Context context, ArrayList<FileInfo> allFileInfos, ListView lv) {
+    public FileListAdapter(Context context, ArrayList<FileInfo> allFileInfos, ListView lv, Handler handler) {
         inflater = LayoutInflater.from(context);
         this.allFileInfos = allFileInfos;
         this.lv = lv;
+        this.asyncLoadImage = new AsyncLoadImage(handler);
     }
 
     public void bindData(ArrayList<FileInfo> allFileInfos) {
@@ -75,6 +79,7 @@ public class FileListAdapter extends BaseAdapter implements OnScrollListener {
             if (name.endsWith(".jpg") || name.endsWith(".png") || name.endsWith(".jpeg")
                     || name.endsWith(".bmp")) {
                 item.fileIcon.setTag(file.getAbsolutePath());
+                asyncLoadImage.loadImage(item.fileIcon);
             } else if (name.endsWith(".txt")) {
                 item.fileIcon.setImageResource(R.drawable.text);
             } else if (name.endsWith(".chm")) {
