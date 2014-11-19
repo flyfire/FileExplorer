@@ -23,28 +23,29 @@ import org.solarex.fileexplorer.utils.AsyncLoadImage;
 import java.io.File;
 import java.util.ArrayList;
 
-public class FileListAdapter extends BaseAdapter implements OnScrollListener {
+public class FileListAdapter extends BaseAdapter {
     private static final String TAG = "FileListAdapter";
     private Context context;
     private LayoutInflater inflater;
     private ArrayList<FileInfo> allFileInfos;
-    private ListView lv;
     private AsyncLoadImage asyncLoadImage;
-    private static Parcelable listViewState;
 
-    public FileListAdapter(Context context, ArrayList<FileInfo> allFileInfos, ListView lv,
+    public FileListAdapter(Context context, ArrayList<FileInfo> allFileInfos,
             Handler handler) {
         this.context = context;
         inflater = LayoutInflater.from(context);
         this.allFileInfos = allFileInfos;
-        this.lv = lv;
         this.asyncLoadImage = new AsyncLoadImage(handler);
-        this.lv.setOnScrollListener(this);
     }
 
     public void bindData(ArrayList<FileInfo> allFileInfos) {
         this.allFileInfos = allFileInfos;
         this.notifyDataSetChanged();
+    }
+    
+
+    public AsyncLoadImage getAsyncLoadImage() {
+        return asyncLoadImage;
     }
 
     @Override
@@ -108,30 +109,6 @@ public class FileListAdapter extends BaseAdapter implements OnScrollListener {
             }
         }
         return convertView;
-    }
-
-    @Override
-    public void onScrollStateChanged(AbsListView view, int scrollState) {
-        Log.v(TAG, "onScrollStateChanged scrollState = " + scrollState);
-        switch (scrollState) {
-            case OnScrollListener.SCROLL_STATE_FLING:
-            case OnScrollListener.SCROLL_STATE_TOUCH_SCROLL:
-                asyncLoadImage.lock();
-                Log.v(TAG, "threads locked,not loading images or apk icons now...");
-                break;
-            case OnScrollListener.SCROLL_STATE_IDLE:
-                listViewState = this.lv.onSaveInstanceState();
-                asyncLoadImage.unlock();
-                Log.v(TAG, "threads unlocked, loading images");
-            default:
-                break;
-        }
-    }
-
-    @Override
-    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount,
-            int totalItemCount) {
-
     }
 
 }

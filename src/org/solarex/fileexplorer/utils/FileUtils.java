@@ -13,6 +13,11 @@ import java.util.List;
 
 public class FileUtils {
     private static final String TAG = "FileUtils";
+    
+    public static ArrayList<FileInfo> getFiles(String path){
+        File[] files = new File(path).listFiles(new SolarexFilter());
+        return sortAndGenerate(files);
+    }
     public static ArrayList<FileInfo> sortAndGenerate(File[] files){
         assert(files!=null);
         Log.v(TAG, "files = " + files);
@@ -30,5 +35,10 @@ public class FileUtils {
             allFileInfos.add(info);
         }
         return allFileInfos;
+    }
+    public static void PrintFileInfos(ArrayList<FileInfo> fileInfos){
+        for (FileInfo fileInfo : fileInfos) {
+            Log.v(TAG, "file = " + fileInfo);
+        }
     }
 }

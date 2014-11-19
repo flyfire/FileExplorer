@@ -26,6 +26,13 @@ public class FileInfo {
     public void setSelected(boolean isSelected) {
         this.isSelected = isSelected;
     }
+
+    @Override
+    public String toString() {
+        return file.getAbsolutePath() + " = " + isSelected;
+    }
+    
+    
     
     
 }
