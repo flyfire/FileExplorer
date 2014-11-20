@@ -3,9 +3,31 @@
     tools:context="org.solarex.fileexplorer.MainActivity" >
 
     <item
-        android:id="@+id/action_settings"
+        android:id="@+id/action_mkdir"
         android:orderInCategory="100"
         android:showAsAction="never"
-        android:title="@string/action_settings"/>
+        android:title="@string/action_mkdir"/>
+    <item
+        android:id="@+id/action_selectall"
+        android:showAsAction="always"
+        android:title="@string/action_selectall"/>
+    <item 
+        android:id="@+id/action_unselectall"
+        android:showAsAction="never"
+        android:title="@string/action_unselectall"/>
+    <item
+        android:id="@+id/action_copy"
+        android:showAsAction="never"
+        android:title="@string/action_copy"/>
+    <item 
+        android:id="@+id/action_move"
+        android:showAsAction="never"
+        android:title="@string/action_move"
+        />
+    <item
+        android:id="@+id/action_paste"
+        android:showAsAction="never"
+        android:title="@string/action_paste"
+        />
 
 </menu>

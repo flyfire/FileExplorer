@@ -3,10 +3,15 @@
 
     <string name="app_name">FileExplorer</string>
     <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
+    <string name="action_mkdir">Create Folder</string>
+    <string name="action_selectall">SelectAll</string>
+    <string name="action_copy">Copy</string>
+    <string name="action_move">Move</string>
+    <string name="action_paste">Paste</string>
     <string name="file_explorer">FileExplorer</string>
     <string name="sd_mounted">SD card already mounted!</string>
     <string name="sd_umounted">SD card hasnt been mounted!</string>
+    <string name="action_unselectall">UnSelectAll</string>
     
     
     

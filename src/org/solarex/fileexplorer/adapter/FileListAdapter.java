@@ -81,7 +81,12 @@ public class FileListAdapter extends BaseAdapter {
         item.fileName.setText(file.getName());
         item.fileChecked.setChecked(info.isSelected());
         if (file.isDirectory()) {
-            item.fileIcon.setImageResource(R.drawable.folder);
+            File[] files = file.listFiles();
+            if (files!=null && files.length>0) {
+                item.fileIcon.setImageResource(R.drawable.folder_);
+            } else {
+                item.fileIcon.setImageResource(R.drawable.folder);
+            }
         } else {
             String name = file.getName().toLowerCase();
             if (name.endsWith(".jpg") || name.endsWith(".png") || name.endsWith(".jpeg")

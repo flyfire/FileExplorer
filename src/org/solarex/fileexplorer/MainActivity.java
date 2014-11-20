@@ -1,7 +1,6 @@
 
 package org.solarex.fileexplorer;
 
-import android.R.integer;
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Environment;
@@ -23,10 +22,10 @@ import android.widget.Toast;
 import org.solarex.fileexplorer.adapter.FileListAdapter;
 import org.solarex.fileexplorer.bean.FileInfo;
 import org.solarex.fileexplorer.utils.FileUtils;
-import org.solarex.fileexplorer.utils.SolarexFilter;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class MainActivity extends Activity implements OnItemClickListener, OnScrollListener {
     private ListView lv;
@@ -35,6 +34,9 @@ public class MainActivity extends Activity implements OnItemClickListener, OnScr
     private Handler handler;
     private FileListAdapter adapter;
     private File parentFile;
+    private HashSet<FileInfo> selectedFileInfos;
+    private static boolean canPaste;
+    private static int OPERATION_TYPE = -1;
     private final String TAG = MainActivity.class.getSimpleName();
 
     @Override
@@ -72,6 +74,8 @@ public class MainActivity extends Activity implements OnItemClickListener, OnScr
         } else {
             Toast.makeText(this, getString(R.string.sd_umounted), Toast.LENGTH_LONG).show();
         }
+        
+        selectedFileInfos = new HashSet<FileInfo>();
 
     }
 
@@ -84,8 +88,40 @@ public class MainActivity extends Activity implements OnItemClickListener, OnScr
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
+        switch (id) {
+            case R.id.action_selectall:
+                for (FileInfo fileInfo : allFileInfos) {
+                    fileInfo.setSelected(true);
+                    selectedFileInfos.add(fileInfo);
+                }
+                canPaste = true;
+                adapter.bindData(allFileInfos);
+                lv.setAdapter(adapter);
+                break;
+            case R.id.action_unselectall:
+                for (FileInfo fileInfo : allFileInfos) {
+                    fileInfo.setSelected(false);
+                }
+                selectedFileInfos.clear();
+                canPaste = false;
+                adapter.bindData(allFileInfos);
+                lv.setAdapter(adapter);
+                break;
+            case R.id.action_copy:
+                if (canPaste) {
+                    OPERATION_TYPE = 0;
+                }
+                break;
+            case R.id.action_move:
+                if (canPaste) {
+                    OPERATION_TYPE = 1;
+                }
+                break;
+            case R.id.action_paste:
+                
+                break;
+            default:
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
