@@ -58,6 +58,22 @@ public class MainActivity extends Activity implements OnItemClickListener, OnScr
 
             @Override
             public void handleMessage(Message msg) {
+                switch (msg.what) {
+                    case CREATE_FOLDER_RESULT:
+                        boolean isSuccess = (Boolean) msg.obj;
+                        if (isSuccess) {
+                            Toast.makeText(MainActivity.this, "Create folder success!", Toast.LENGTH_LONG).show();
+                            allFileInfos = FileUtils.GetPathFiles(pathInfo.getText().toString());
+                            adapter.bindData(allFileInfos);
+                            lv.setAdapter(adapter);
+                        } else {
+                            Toast.makeText(MainActivity.this, "Create folder failed!", Toast.LENGTH_LONG).show();
+                        }
+                        break;
+
+                    default:
+                        break;
+                }
             }
             
         };
@@ -78,7 +94,7 @@ public class MainActivity extends Activity implements OnItemClickListener, OnScr
             Log.v(TAG, "onCreate sdPath = " + sdPath + " name = " + new File(sdPath).getName()
                     + " parent = " + new File(sdPath).getParentFile().getAbsolutePath());
             Log.v(TAG, "files = " + new File(sdPath).listFiles());
-            allFileInfos = FileUtils.getFiles(sdPath);
+            allFileInfos = FileUtils.GetPathFiles(sdPath);
             FileUtils.PrintFileInfos(allFileInfos);
             adapter = new FileListAdapter(this, allFileInfos, handler);
             // adapter = new FileListAdapter(this, allFileInfos, lv, handler);
@@ -135,18 +151,21 @@ public class MainActivity extends Activity implements OnItemClickListener, OnScr
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         String name = text.getText().toString();
+                        Log.v(TAG, "input name = " + name);
+                        boolean isSuccess = false;
                         if (!TextUtils.isEmpty(name)) {
-                            boolean isSuccess = FileUtils.CreateFolder(pathInfo.getText().toString(), name);
-                            Message msg = Message.obtain();
-                            msg.what = CREATE_FOLDER_RESULT;
-                            msg.obj = isSuccess;
-                            handler.sendMessage(msg);
+                            isSuccess = FileUtils.CreateFolder(pathInfo.getText().toString(), name);
                         }else {
                             Toast.makeText(MainActivity.this, "Folder name cant be empty", Toast.LENGTH_LONG).show();
                         }
+                        Log.v(TAG, "isSuccess = " + isSuccess);
+                        Message msg = Message.obtain();
+                        msg.what = CREATE_FOLDER_RESULT;
+                        msg.obj = isSuccess;
+                        handler.sendMessage(msg);
                     }
                 });
-                builder.setPositiveButton("Cancel", null);
+                builder.setNegativeButton("Cancel", null);
                 builder.create().show();
                 break;
             case R.id.action_copy:
@@ -195,7 +214,7 @@ public class MainActivity extends Activity implements OnItemClickListener, OnScr
             Log.v(TAG, "path = " + path);
             pathInfo.setText(path);
             Log.v(TAG, "pathInfo = " + pathInfo.getText());
-            this.allFileInfos = FileUtils.getFiles(pathInfo.getText().toString());
+            this.allFileInfos = FileUtils.GetPathFiles(pathInfo.getText().toString());
             adapter.bindData(allFileInfos);
             lv.setAdapter(adapter);
         } else {
@@ -234,7 +253,7 @@ public class MainActivity extends Activity implements OnItemClickListener, OnScr
             String parentParentPath = parentFile.getParentFile().getAbsolutePath();
             Log.v(TAG, "parentPath = " + parentPath + " parentParentPath = " + parentParentPath);
             if (parentFile != null && !parentParentPath.equals("/storage")) {
-                allFileInfos = FileUtils.getFiles(parentPath);
+                allFileInfos = FileUtils.GetPathFiles(parentPath);
                 adapter.bindData(allFileInfos);
                 lv.setAdapter(adapter);
                 parentFile = parentFile.getParentFile();
