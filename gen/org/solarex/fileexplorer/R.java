@@ -90,6 +90,7 @@ public final class R {
         public static final int hello_world=0x7f050001;
         public static final int sd_mounted=0x7f050008;
         public static final int sd_umounted=0x7f050009;
+        public static final int set_operation=0x7f05000b;
     }
     public static final class style {
         /** 

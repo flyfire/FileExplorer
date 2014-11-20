@@ -12,5 +12,6 @@
     <string name="sd_mounted">SD卡已经挂载</string>
     <string name="sd_umounted">SD卡未挂载</string>
     <string name="action_unselectall">全不选</string>
+    <string name="set_operation">请先选择复制/剪切类型!</string>
 
 </resources>
