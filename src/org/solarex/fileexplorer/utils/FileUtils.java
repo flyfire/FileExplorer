@@ -14,14 +14,17 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 
 public class FileUtils {
     private static final String TAG = "FileUtils";
     public static final int COPY_FILE_RESULT = 0;
     public static final int MOVE_FILE_RESULT = 1;
+    /*
     public static final int COPY_FILE_EXCEPTION = 2;
     public static final int MOVE_FILE_EXCEPTION = 3;
+    */
     
     public static ArrayList<FileInfo> GetPathFiles(String path){
         File[] files = new File(path).listFiles(new SolarexFilter());
@@ -66,8 +69,12 @@ public class FileUtils {
         }
         return file.mkdir();
     }
-    
-    public static void CopyFile(FileInfo fileInfo, String dest, Handler handler){
+    /*
+    public static void StartCopyFile(HashSet<FileInfo> fileInfos, String dest, Handler handler){
+        new CopyFileThread(fileInfos, dest, handler).start();
+    }
+    */
+    public static void CopyFile(FileInfo fileInfo, String dest){
         if (fileInfo == null || dest == null ) {
             Log.e(TAG, "CopyFile: null parameter");
         }
@@ -84,10 +91,11 @@ public class FileUtils {
             }
             for (File fileInDirectory : file.listFiles(new SolarexFilter())) {
                 FileInfo tmpFileInfo = new FileInfo(fileInDirectory, false);
-                CopyFile(tmpFileInfo, destPath, handler);
+                CopyFile(tmpFileInfo, destPath);
             }
         } else {
-            String destFilePath = copyRawFile(file, dest, handler);
+            String destFilePath = copyRawFile(file, dest);
+            /*
             Message msg = Message.obtain();
             msg.what = COPY_FILE_RESULT;
             if (null == destFilePath) {
@@ -96,10 +104,11 @@ public class FileUtils {
                 msg.obj = "Copy raw file success, new file is " + destFilePath;
             }
             handler.sendMessage(msg);
+            */
         }
     }
     
-    public static String copyRawFile(File file, String dest, Handler handler){
+    public static String copyRawFile(File file, String dest){
         if (!file.exists() || file.isDirectory()) {
             Log.v(TAG, "copyRawFile: file dont exists or file is directory");
             return null;
@@ -195,4 +204,26 @@ public class FileUtils {
             return "";
         }
     }
+    
+    /*
+    public static class CopyFileThread extends Thread{
+        private HashSet<FileInfo> fileInfos;
+        private String dest;
+        private Handler handler;
+        
+        public CopyFileThread(HashSet<FileInfo> fileInfos, String dest, Handler handler){
+            this.fileInfos = fileInfos;
+            this.dest = dest;
+            this.handler = handler;
+        }
+
+        @Override
+        public void run() {
+            Log.v(TAG, "copyfilethread = " + this.getId() + " dest = " + dest);
+            for (FileInfo fileInfo : fileInfos) {
+                CopyFile(fileInfo, dest, handler);
+            }
+        }
+        
+    }*/
 }

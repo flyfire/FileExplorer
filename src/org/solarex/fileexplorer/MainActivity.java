@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -41,6 +42,7 @@ public class MainActivity extends Activity implements OnItemClickListener, OnScr
     private FileListAdapter adapter;
     private File parentFile;
     private HashSet<FileInfo> selectedFileInfos;
+    private HashSet<FileInfo> selectedFileInfoCopy;
     private static int OPERATION_TYPE = -1;
     private final int ACTION_COPY = 0;
     private final int ACTION_MOVE = 1;
@@ -184,7 +186,7 @@ public class MainActivity extends Activity implements OnItemClickListener, OnScr
                 if (canPaste()) {
                     switch (OPERATION_TYPE) {
                         case ACTION_COPY:
-
+                            HashSet<FileInfo> allInfos = (HashSet<FileInfo>) selectedFileInfos.clone();
                             break;
                         case ACTION_MOVE:
 
