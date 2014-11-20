@@ -1,6 +1,6 @@
 package org.solarex.fileexplorer.utils;
 
-import android.nfc.Tag;
+import android.os.Handler;
 import android.util.Log;
 
 import org.solarex.fileexplorer.bean.FileInfo;
@@ -41,4 +41,29 @@ public class FileUtils {
             Log.v(TAG, "file = " + fileInfo);
         }
     }
+    
+    public static String makePath(String path, String name){
+        if (path.endsWith("/")) {
+            return path + name;
+        }
+        return path + "/" + name;
+    }
+    
+    public static boolean CreateFolder(String dest, String name){
+        String newFolderName = makePath(dest, name);
+        File file = new File(newFolderName);
+        if (file.exists()) {
+            return false;
+        }
+        return file.mkdir();
+    }
+    
+    public static void CopyFile(FileInfo fileInfo, String dest){
+        if (fileInfo == null || dest == null ) {
+            Log.e(TAG, "CopyFile: null parameter");
+        }
+        File file = fileInfo.getFile();
+    }
+    
+    
 }

@@ -2,9 +2,14 @@
 package org.solarex.fileexplorer;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.Message;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -15,6 +20,7 @@ import android.widget.AdapterView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -39,6 +45,7 @@ public class MainActivity extends Activity implements OnItemClickListener, OnScr
     private static int OPERATION_TYPE = -1;
     private final int ACTION_COPY = 0;
     private final int ACTION_MOVE = 1;
+    private final int CREATE_FOLDER_RESULT = 42;
     private final String TAG = MainActivity.class.getSimpleName();
 
     @Override
@@ -47,7 +54,13 @@ public class MainActivity extends Activity implements OnItemClickListener, OnScr
         setContentView(R.layout.activity_main);
         pathInfo = (TextView) this.findViewById(R.id.path_info);
         lv = (ListView) this.findViewById(R.id.lv);
-        this.handler = new Handler();
+        this.handler = new Handler(){
+
+            @Override
+            public void handleMessage(Message msg) {
+            }
+            
+        };
         lv.setOnItemClickListener(this);
         Log.v(TAG, "lv set onitemclick");
         lv.setOnScrollListener(this);
@@ -113,7 +126,28 @@ public class MainActivity extends Activity implements OnItemClickListener, OnScr
                 lv.setAdapter(adapter);
                 break;
             case R.id.action_mkdir:
-                
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle(getString(R.string.action_mkdir));
+                final EditText text = new EditText(this);
+                builder.setView(text);
+                builder.setPositiveButton("OK", new OnClickListener() {
+                    
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String name = text.getText().toString();
+                        if (!TextUtils.isEmpty(name)) {
+                            boolean isSuccess = FileUtils.CreateFolder(pathInfo.getText().toString(), name);
+                            Message msg = Message.obtain();
+                            msg.what = CREATE_FOLDER_RESULT;
+                            msg.obj = isSuccess;
+                            handler.sendMessage(msg);
+                        }else {
+                            Toast.makeText(MainActivity.this, "Folder name cant be empty", Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
+                builder.setPositiveButton("Cancel", null);
+                builder.create().show();
                 break;
             case R.id.action_copy:
                 if (canPaste) {
