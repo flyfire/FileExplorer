@@ -7,6 +7,10 @@ import android.util.Log;
 import org.solarex.fileexplorer.bean.FileInfo;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -88,10 +92,10 @@ public class FileUtils {
             msg.what = COPY_FILE_RESULT;
             if (null == destFilePath) {
                 msg.obj = "Copy raw file " + file.getAbsolutePath() + " failed";
-                handler.sendMessage(msg);
             } else {
                 msg.obj = "Copy raw file success, new file is " + destFilePath;
             }
+            handler.sendMessage(msg);
         }
     }
     
@@ -115,8 +119,80 @@ public class FileUtils {
             destFileString = makePath(dest, getFileNameFromFile(file)+" "+i+getFileExtFromFile(file));
             destFile = new File(destFileString);
         }
+        FileInputStream fis = null;
+        FileOutputStream fos = null;
+        
+        try {
+            if (!destFile.createNewFile()) {
+                return null;
+            }
+            
+            fis = new FileInputStream(file);
+            fos = new FileOutputStream(destFile);
+            
+            int count = 10240;
+            byte[] buffer = new byte[count];
+            int len = 0;
+            
+            while ((len = fis.read(buffer, 0, count)) != -1) {
+                fos.write(buffer, 0, len);
+            }
+            
+            return destFileString;
+        } catch (FileNotFoundException e) {
+           /*
+           Message msg = Message.obtain();
+           msg.what = COPY_FILE_EXCEPTION;
+           msg.obj = e.getMessage();
+           handler.sendMessage(msg);
+           */
+           Log.e(TAG, "copyRawFile exception happened, ex = " + e.getMessage());
+        } catch (IOException e) {
+            /*
+            Message msg = Message.obtain();
+            msg.what = COPY_FILE_EXCEPTION;
+            msg.obj = e.getMessage();
+            handler.sendMessage(msg);
+            */
+            Log.e(TAG, "copyRawFile exception happened, ex = " + e.getMessage());
+        } finally {
+            try {
+                if (fis != null) {
+                    fis.close();
+                }
+                if (fos != null) {
+                    fos.close();
+                }
+            } catch (IOException e) {
+               Log.e(TAG, "copyRawFile exception happened, ex = " + e.getMessage()); 
+            }
+        }
+
         
         return null;
     }
     
+    public static String getFileNameFromFile(File file){
+        if (file==null || !file.exists()) {
+            return null;
+        }
+        int index = file.getName().lastIndexOf(".");
+        if (index != -1) {
+            return file.getName().substring(0,index);
+        } else {
+            return file.getName();
+        }
+    }
+    
+    public static String getFileExtFromFile(File file){
+        if (file==null || !file.exists()) {
+            return null;
+        }
+        int index = file.getName().lastIndexOf(".");
+        if (index != -1) {
+            return file.getName().substring(index, file.getName().length());
+        } else {
+            return "";
+        }
+    }
 }

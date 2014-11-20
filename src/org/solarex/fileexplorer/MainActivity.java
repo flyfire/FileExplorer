@@ -41,7 +41,6 @@ public class MainActivity extends Activity implements OnItemClickListener, OnScr
     private FileListAdapter adapter;
     private File parentFile;
     private HashSet<FileInfo> selectedFileInfos;
-    private static boolean canPaste;
     private static int OPERATION_TYPE = -1;
     private final int ACTION_COPY = 0;
     private final int ACTION_MOVE = 1;
@@ -54,6 +53,9 @@ public class MainActivity extends Activity implements OnItemClickListener, OnScr
         setContentView(R.layout.activity_main);
         pathInfo = (TextView) this.findViewById(R.id.path_info);
         lv = (ListView) this.findViewById(R.id.lv);
+        
+        selectedFileInfos = new HashSet<FileInfo>();
+        
         this.handler = new Handler(){
 
             @Override
@@ -96,7 +98,7 @@ public class MainActivity extends Activity implements OnItemClickListener, OnScr
             Log.v(TAG, "files = " + new File(sdPath).listFiles());
             allFileInfos = FileUtils.GetPathFiles(sdPath);
             FileUtils.PrintFileInfos(allFileInfos);
-            adapter = new FileListAdapter(this, allFileInfos, handler);
+            adapter = new FileListAdapter(this, allFileInfos, handler, selectedFileInfos);
             // adapter = new FileListAdapter(this, allFileInfos, lv, handler);
             lv.setAdapter(adapter);
             // FileListAdapter adapter = new FileListAdapter(this, allFiles,
@@ -106,7 +108,7 @@ public class MainActivity extends Activity implements OnItemClickListener, OnScr
             Toast.makeText(this, getString(R.string.sd_umounted), Toast.LENGTH_LONG).show();
         }
 
-        selectedFileInfos = new HashSet<FileInfo>();
+        
 
     }
 
@@ -128,7 +130,6 @@ public class MainActivity extends Activity implements OnItemClickListener, OnScr
                 for (FileInfo fileInfo : selectedFileInfos) {
                     Log.d(TAG, "selected file info = " + fileInfo);
                 }
-                canPaste = true;
                 adapter.bindData(allFileInfos);
                 lv.setAdapter(adapter);
                 break;
@@ -137,7 +138,6 @@ public class MainActivity extends Activity implements OnItemClickListener, OnScr
                     fileInfo.setSelected(false);
                 }
                 selectedFileInfos.clear();
-                canPaste = false;
                 adapter.bindData(allFileInfos);
                 lv.setAdapter(adapter);
                 break;
@@ -169,17 +169,19 @@ public class MainActivity extends Activity implements OnItemClickListener, OnScr
                 builder.create().show();
                 break;
             case R.id.action_copy:
-                if (canPaste) {
+                if (canPaste()) {
                     OPERATION_TYPE = ACTION_COPY;
                 }
+                Log.v(TAG, "action copy clicked!");
                 break;
             case R.id.action_move:
-                if (canPaste) {
+                if (canPaste()) {
                     OPERATION_TYPE = ACTION_MOVE;
                 }
+                Log.v(TAG, "action move clicked!");
                 break;
             case R.id.action_paste:
-                if (canPaste) {
+                if (canPaste()) {
                     switch (OPERATION_TYPE) {
                         case ACTION_COPY:
 
@@ -193,6 +195,7 @@ public class MainActivity extends Activity implements OnItemClickListener, OnScr
                             break;
                     }
                 }
+                Log.v(TAG, "action paste clicked operation type = " + OPERATION_TYPE);
                 break;
             default:
                 break;
@@ -265,5 +268,17 @@ public class MainActivity extends Activity implements OnItemClickListener, OnScr
         }
         return true;
     }
+    
+    private boolean canPaste(){
+        return this.selectedFileInfos.size() != 0;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        this.selectedFileInfos.clear();
+    }
+    
+    
 
 }

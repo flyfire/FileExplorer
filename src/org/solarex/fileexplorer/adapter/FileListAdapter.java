@@ -11,6 +11,8 @@ import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -22,20 +24,23 @@ import org.solarex.fileexplorer.utils.AsyncLoadImage;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashSet;
 
-public class FileListAdapter extends BaseAdapter {
+public class FileListAdapter extends BaseAdapter implements OnCheckedChangeListener{
     private static final String TAG = "FileListAdapter";
     private Context context;
     private LayoutInflater inflater;
     private ArrayList<FileInfo> allFileInfos;
     private AsyncLoadImage asyncLoadImage;
+    private HashSet<FileInfo> selectedFileInfos;
 
     public FileListAdapter(Context context, ArrayList<FileInfo> allFileInfos,
-            Handler handler) {
+            Handler handler, HashSet<FileInfo> selectedFileInfos) {
         this.context = context;
         inflater = LayoutInflater.from(context);
         this.allFileInfos = allFileInfos;
         this.asyncLoadImage = new AsyncLoadImage(handler);
+        this.selectedFileInfos = selectedFileInfos;
     }
 
     public void bindData(ArrayList<FileInfo> allFileInfos) {
@@ -80,6 +85,8 @@ public class FileListAdapter extends BaseAdapter {
         File file = info.getFile();
         item.fileName.setText(file.getName());
         item.fileChecked.setChecked(info.isSelected());
+        item.fileChecked.setTag(info);
+        item.fileChecked.setOnCheckedChangeListener(this);
         if (file.isDirectory()) {
             File[] files = file.listFiles();
             if (files!=null && files.length>0) {
@@ -114,6 +121,18 @@ public class FileListAdapter extends BaseAdapter {
             }
         }
         return convertView;
+    }
+
+    @Override
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        Log.v(TAG, "check changed = " + buttonView);
+        FileInfo fileInfo = (FileInfo) buttonView.getTag();
+        if (isChecked) {
+            this.selectedFileInfos.add(fileInfo);
+        } else {
+            this.selectedFileInfos.remove(fileInfo);
+        }
+        
     }
 
 }
