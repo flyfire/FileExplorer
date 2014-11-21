@@ -114,8 +114,7 @@ public class FileListAdapter extends BaseAdapter implements OnCheckedChangeListe
             } else if (name.endsWith(".xls")) {
                 item.fileIcon.setImageResource(R.drawable.excel);
             } else if (name.endsWith(".apk")) {
-                item.fileIcon.setTag(file.getAbsolutePath());
-                asyncLoadImage.loadApkIcon(this.context, item.fileIcon);
+                asyncLoadImage.loadApkIcon(this.context, item.fileIcon, file.getAbsolutePath());
             } else {
                 item.fileIcon.setImageResource(R.drawable.file);
             }

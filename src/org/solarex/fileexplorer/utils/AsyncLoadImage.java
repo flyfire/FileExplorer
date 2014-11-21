@@ -45,8 +45,7 @@ public class AsyncLoadImage {
         new LoadImageThread(path, imageView).start();
     }
 
-    public void loadApkIcon(Context context, ImageView imageView) {
-        String path = (String) imageView.getTag();
+    public void loadApkIcon(Context context, ImageView imageView,String path) {
         for (CacheApkIcon icon : cacheApkIcons) {
             if (icon.getPath().equals(path)) {
                 imageView.setImageDrawable(icon.getIcon());
@@ -141,13 +140,15 @@ public class AsyncLoadImage {
                 cacheApkIcons.poll();
             }
             cacheApkIcons.add(apkIcon);
-            handler.post(new Runnable() {
+            if (path.equals(imageView.getTag())) {
+                handler.post(new Runnable() {
 
-                @Override
-                public void run() {
-                    imageView.setImageDrawable(icon);
-                }
-            });
+                    @Override
+                    public void run() {
+                        imageView.setImageDrawable(icon);
+                    }
+                });
+            }
         }
 
     }
