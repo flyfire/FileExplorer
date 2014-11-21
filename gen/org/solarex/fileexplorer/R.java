@@ -17,49 +17,26 @@ public final class R {
         public static final int activity_vertical_margin=0x7f040001;
     }
     public static final class drawable {
-        public static final int about=0x7f020000;
-        public static final int bg_contact_search=0x7f020001;
-        public static final int bg_header=0x7f020002;
-        public static final int chm=0x7f020003;
-        public static final int excel=0x7f020004;
-        public static final int file=0x7f020005;
-        public static final int folder=0x7f020006;
-        public static final int folder_=0x7f020007;
-        public static final int format_flash=0x7f020008;
-        public static final int format_media=0x7f020009;
-        public static final int format_music=0x7f02000a;
-        public static final int format_picture=0x7f02000b;
-        public static final int html=0x7f02000c;
-        public static final int ic_action_search=0x7f02000d;
-        public static final int ic_contact_picture_holo=0x7f02000e;
-        public static final int ic_fast_access=0x7f02000f;
-        public static final int ic_launcher=0x7f020010;
-        public static final int icon=0x7f020011;
-        public static final int list_item_selector=0x7f020012;
-        public static final int list_ongoing_holo=0x7f020013;
-        public static final int list_pressed_holo=0x7f020014;
-        public static final int menu_file=0x7f020015;
-        public static final int menu_folder=0x7f020016;
-        public static final int menu_new=0x7f020017;
-        public static final int text=0x7f020018;
-        public static final int theme_background=0x7f020019;
-        public static final int toolbar_applications=0x7f02001a;
-        public static final int toolbar_bg=0x7f02001b;
-        public static final int toolbar_bg_2=0x7f02001c;
-        public static final int toolbar_copy=0x7f02001d;
-        public static final int toolbar_mode_icon=0x7f02001e;
-        public static final int toolbar_mode_list=0x7f02001f;
-        public static final int toolbar_paste=0x7f020020;
-        public static final int toolbar_paste_cancel=0x7f020021;
-        public static final int toolbar_search=0x7f020022;
-        public static final int toolbar_select=0x7f020023;
-        public static final int toolbar_select_focus=0x7f020024;
-        public static final int toolbar_taskmanager=0x7f020025;
-        public static final int toolbar_uplevel=0x7f020026;
-        public static final int webpage_title_bg=0x7f020027;
+        public static final int bg_header=0x7f020000;
+        public static final int chm=0x7f020001;
+        public static final int excel=0x7f020002;
+        public static final int file=0x7f020003;
+        public static final int folder=0x7f020004;
+        public static final int folder_=0x7f020005;
+        public static final int format_flash=0x7f020006;
+        public static final int format_media=0x7f020007;
+        public static final int format_music=0x7f020008;
+        public static final int format_picture=0x7f020009;
+        public static final int html=0x7f02000a;
+        public static final int ic_launcher=0x7f02000b;
+        public static final int icon=0x7f02000c;
+        public static final int list_pressed_holo=0x7f02000d;
+        public static final int text=0x7f02000e;
+        public static final int theme_background=0x7f02000f;
     }
     public static final class id {
         public static final int action_copy=0x7f080008;
+        public static final int action_delete=0x7f08000b;
         public static final int action_mkdir=0x7f080005;
         public static final int action_move=0x7f080009;
         public static final int action_paste=0x7f08000a;
@@ -80,6 +57,7 @@ public final class R {
     }
     public static final class string {
         public static final int action_copy=0x7f050004;
+        public static final int action_delete=0x7f05000c;
         public static final int action_mkdir=0x7f050002;
         public static final int action_move=0x7f050005;
         public static final int action_paste=0x7f050006;

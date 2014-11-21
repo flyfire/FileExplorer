@@ -13,6 +13,7 @@
     <string name="sd_umounted">SD card hasnt been mounted!</string>
     <string name="action_unselectall">UnSelectAll</string>
     <string name="set_operation">Please select copy/move first!</string>
+    <string name="action_delete">Delete</string>
     
     
     

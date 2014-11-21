@@ -222,6 +222,26 @@ public class FileUtils {
             return "";
         }
     }
+    
+    public static boolean DeleteFiles(FileInfo fileInfo){
+        if (fileInfo == null) {
+            return false;
+        }
+        File file = fileInfo.getFile();
+        if (!file.exists()) {
+            return false;
+        }
+        
+        if (file.isDirectory()) {
+            for (File file2 : file.listFiles()) {
+                DeleteFiles(new FileInfo(file2, false));
+            }
+        }
+        
+        boolean isSuccess = file.delete();
+        Log.v(TAG, "file = " + file.getAbsolutePath() + " delete isSuccess = " + isSuccess);
+        return isSuccess;
+    }
 
     /*
      * public static class CopyFileThread extends Thread{ private

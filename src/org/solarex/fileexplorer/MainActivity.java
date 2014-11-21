@@ -50,7 +50,7 @@ public class MainActivity extends Activity implements OnItemClickListener, OnScr
     private final int ACTION_MOVE = 1;
     private final int CREATE_FOLDER_RESULT = 42;
     private ProgressDialog pd;
-    private MenuItem pasteItem;
+    private MenuItem pasteItem, deleteItem;
     private final String TAG = MainActivity.class.getSimpleName();
 
     @Override
@@ -124,6 +124,7 @@ public class MainActivity extends Activity implements OnItemClickListener, OnScr
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
         pasteItem = menu.getItem(4);
+        deleteItem = menu.getItem(5);
         return true;
     }
 
@@ -219,6 +220,19 @@ public class MainActivity extends Activity implements OnItemClickListener, OnScr
                     }
                 }
                 Log.v(TAG, "action paste clicked operation type = " + OPERATION_TYPE);
+                break;
+            case R.id.action_delete:
+                if (canPaste()) {
+                    if (selectedCopy == null) {
+                        selectedCopy = new HashSet<FileInfo>();
+                    }
+                    for (FileInfo fileInfo : selectedFileInfos) {
+                        selectedCopy.add(fileInfo);
+                    }
+                    selectedFileInfos.clear();
+                    new DeleteFileTask().execute();
+                }
+                Log.v(TAG, "action delete clicked");
                 break;
             default:
                 break;
@@ -378,6 +392,45 @@ public class MainActivity extends Activity implements OnItemClickListener, OnScr
             lv.setAdapter(adapter);
             pasteItem.setEnabled(false);
             pd.dismiss();
+        }
+        
+        
+    }
+    
+    class DeleteFileTask extends AsyncTask<Void, Void, Void>{
+        public DeleteFileTask(){
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            if (pd == null) {
+                pd = new ProgressDialog(MainActivity.this);
+            }
+            pd.setTitle("Delete files");
+            pd.setMessage("Operation deleting files...");
+            pd.show();
+            deleteItem.setEnabled(false);
+        }
+        
+        @Override
+        protected Void doInBackground(Void... params) {
+            for (FileInfo fileInfo : selectedCopy) {
+                FileUtils.DeleteFiles(fileInfo);
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            super.onPostExecute(result);
+            selectedCopy.clear();
+            selectedCopy = null;
+            allFileInfos = FileUtils.GetPathFiles(pathInfo.getText().toString());
+            adapter.bindData(allFileInfos);
+            lv.setAdapter(adapter);
+            pd.dismiss();
+            deleteItem.setEnabled(true);
         }
         
         
