@@ -390,7 +390,7 @@ public class MainActivity extends Activity implements OnItemClickListener, OnScr
             allFileInfos = FileUtils.GetPathFiles(pathInfo.getText().toString());
             adapter.bindData(allFileInfos);
             lv.setAdapter(adapter);
-            pasteItem.setEnabled(false);
+            pasteItem.setEnabled(true);
             pd.dismiss();
         }
         
