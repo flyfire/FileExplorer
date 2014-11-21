@@ -3,6 +3,8 @@ package org.solarex.fileexplorer;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.os.AsyncTask;
@@ -42,11 +44,13 @@ public class MainActivity extends Activity implements OnItemClickListener, OnScr
     private FileListAdapter adapter;
     private File parentFile;
     private HashSet<FileInfo> selectedFileInfos;
-    private HashSet<FileInfo> selectedFileInfoCopy;
+    private HashSet<FileInfo> selectedCopy;
     private static int OPERATION_TYPE = -1;
     private final int ACTION_COPY = 0;
     private final int ACTION_MOVE = 1;
     private final int CREATE_FOLDER_RESULT = 42;
+    private ProgressDialog pd;
+    private MenuItem pasteItem;
     private final String TAG = MainActivity.class.getSimpleName();
 
     @Override
@@ -57,12 +61,14 @@ public class MainActivity extends Activity implements OnItemClickListener, OnScr
         lv = (ListView) this.findViewById(R.id.lv);
         
         selectedFileInfos = new HashSet<FileInfo>();
+        pd = new ProgressDialog(this);
         
         this.handler = new Handler(){
 
             @Override
             public void handleMessage(Message msg) {
                 switch (msg.what) {
+                    //unnecessary
                     case CREATE_FOLDER_RESULT:
                         boolean isSuccess = (Boolean) msg.obj;
                         if (isSuccess) {
@@ -117,6 +123,7 @@ public class MainActivity extends Activity implements OnItemClickListener, OnScr
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
+        pasteItem = menu.getItem(4);
         return true;
     }
 
@@ -186,10 +193,24 @@ public class MainActivity extends Activity implements OnItemClickListener, OnScr
                 if (canPaste()) {
                     switch (OPERATION_TYPE) {
                         case ACTION_COPY:
-                            HashSet<FileInfo> allInfos = (HashSet<FileInfo>) selectedFileInfos.clone();
+                            if (selectedCopy == null) {
+                                selectedCopy = new HashSet<FileInfo>();
+                            }
+                            for (FileInfo fileInfo : selectedFileInfos) {
+                                selectedCopy.add(fileInfo);
+                            }
+                            selectedFileInfos.clear();
+                            new CopyFileTask(pathInfo.getText().toString()).execute();
                             break;
                         case ACTION_MOVE:
-
+                            if (selectedCopy == null) {
+                                selectedCopy = new HashSet<FileInfo>();
+                            }
+                            for (FileInfo fileInfo : selectedFileInfos) {
+                                selectedCopy.add(fileInfo);
+                            }
+                            selectedFileInfos.clear();
+                            new MoveFileTask(pathInfo.getText().toString()).execute();
                             break;
                         default:
                             Toast.makeText(this, getString(R.string.set_operation),
@@ -281,6 +302,86 @@ public class MainActivity extends Activity implements OnItemClickListener, OnScr
         this.selectedFileInfos.clear();
     }
     
+    class CopyFileTask extends AsyncTask<Void, Void, Void>{
+        private String dest;
+        private ProgressDialog pd;
+        
+        public CopyFileTask(String dest){
+            this.dest = dest;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            if (null == pd) {
+                pd = new ProgressDialog(MainActivity.this);
+            }
+            pd.setTitle("Copy files");
+            pd.setMessage("Operation copying files...");
+            pd.show();
+            pasteItem.setEnabled(false);
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            for (FileInfo fileInfo : selectedCopy) {
+                FileUtils.CopyFile(fileInfo, dest);
+            }
+            return null;
+        }
+        
+        @Override
+        protected void onPostExecute(Void result) {
+            super.onPostExecute(result);
+            selectedCopy.clear();
+            selectedCopy = null;
+            allFileInfos = FileUtils.GetPathFiles(pathInfo.getText().toString());
+            adapter.bindData(allFileInfos);
+            lv.setAdapter(adapter);
+            pd.dismiss();
+            pasteItem.setEnabled(true);
+        }
+        
+    }
+    
+    class MoveFileTask extends AsyncTask<Void, Void, Void>{
+        private String path;
+        public MoveFileTask(String path){
+            this.path = path;
+        }
+        
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            if (null == pd) {
+                pd = new ProgressDialog(MainActivity.this);
+            }
+            pd.setTitle("Moving files");
+            pd.setMessage("Operation moving files...");
+            pd.show();
+            pasteItem.setEnabled(false);
+        }
+        @Override
+        protected Void doInBackground(Void... params) {
+            for (FileInfo fileInfo : selectedCopy) {
+                FileUtils.MoveFile(fileInfo, path);
+            }
+            return null;
+        }
+        @Override
+        protected void onPostExecute(Void result) {
+            super.onPostExecute(result);
+            selectedCopy.clear();
+            selectedCopy = null;
+            allFileInfos = FileUtils.GetPathFiles(pathInfo.getText().toString());
+            adapter.bindData(allFileInfos);
+            lv.setAdapter(adapter);
+            pasteItem.setEnabled(false);
+            pd.dismiss();
+        }
+        
+        
+    }
     
 
 }
