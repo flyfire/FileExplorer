@@ -34,8 +34,7 @@ public class AsyncLoadImage {
         this.cacheApkIcons = new ConcurrentLinkedQueue<CacheApkIcon>();
     }
 
-    public void loadImage(ImageView imageView) {
-        String path = (String) imageView.getTag();
+    public void loadImage(ImageView imageView,String path) {
         for (CacheImg img : cacheImgs) {
             if (img.getPath().equals(path)) {
                 imageView.setImageBitmap(img.getIcon());
@@ -88,13 +87,16 @@ public class AsyncLoadImage {
                 cacheImgs.poll();
             }
             cacheImgs.add(img);
-            handler.post(new Runnable() {
+            String tagPath = (String) imageView.getTag();
+            if (tagPath.equals(path)) {
+                handler.post(new Runnable() {
 
-                @Override
-                public void run() {
-                    imageView.setImageBitmap(bitmap);
-                }
-            });
+                    @Override
+                    public void run() {
+                        imageView.setImageBitmap(bitmap);
+                    }
+                });
+            }
         }
 
     }

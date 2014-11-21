@@ -87,6 +87,7 @@ public class FileListAdapter extends BaseAdapter implements OnCheckedChangeListe
         item.fileChecked.setChecked(info.isSelected());
         item.fileChecked.setTag(info);
         item.fileChecked.setOnCheckedChangeListener(this);
+        item.fileIcon.setTag(file.getAbsolutePath());
         if (file.isDirectory()) {
             File[] files = file.listFiles();
             if (files!=null && files.length>0) {
@@ -98,8 +99,7 @@ public class FileListAdapter extends BaseAdapter implements OnCheckedChangeListe
             String name = file.getName().toLowerCase();
             if (name.endsWith(".jpg") || name.endsWith(".png") || name.endsWith(".jpeg")
                     || name.endsWith(".bmp")) {
-                item.fileIcon.setTag(file.getAbsolutePath());
-                asyncLoadImage.loadImage(item.fileIcon);
+                asyncLoadImage.loadImage(item.fileIcon, file.getAbsolutePath());
             } else if (name.endsWith(".txt")) {
                 item.fileIcon.setImageResource(R.drawable.text);
             } else if (name.endsWith(".chm")) {
